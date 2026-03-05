@@ -22,6 +22,12 @@ const STATUS_CONFIG = {
     borderClass: "border-zinc-700/50",
     bgClass: "bg-zinc-500/5",
   },
+  archived: {
+    label: "Ended",
+    dotClass: "bg-zinc-700",
+    borderClass: "border-zinc-800/50",
+    bgClass: "bg-zinc-800/5",
+  },
 } as const;
 
 function useTimeAgo(timestamp: number): string {

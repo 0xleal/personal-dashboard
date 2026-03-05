@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid event" }, { status: 400 });
   }
 
-  processEvent(event);
+  await processEvent(event);
 
   return NextResponse.json({ ok: true });
 }

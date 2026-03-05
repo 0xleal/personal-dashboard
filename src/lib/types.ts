@@ -1,4 +1,4 @@
-export type SessionStatus = "thinking" | "needs_input" | "idle";
+export type SessionStatus = "thinking" | "needs_input" | "idle" | "archived";
 
 export interface Session {
   sessionId: string;
@@ -14,7 +14,13 @@ export interface Session {
 export interface HookEvent {
   session_id: string;
   cwd: string;
-  hook_event_name: string;
+  hook_event_name:
+    | "SessionStart"
+    | "UserPromptSubmit"
+    | "PreToolUse"
+    | "Notification"
+    | "Stop"
+    | "SessionEnd";
   permission_mode?: string;
   transcript_path?: string;
   source?: string;
