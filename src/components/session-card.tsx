@@ -5,28 +5,28 @@ import { Session } from "@/lib/types";
 
 const STATUS_CONFIG = {
   thinking: {
-    label: "Thinking",
-    dotClass: "bg-emerald-400 animate-pulse",
-    borderClass: "border-emerald-500/30",
-    bgClass: "bg-emerald-500/5",
+    label: "THINKING",
+    color: "var(--color-status-thinking)",
+    ledClass: "led-active",
+    stripeClass: "stripe-active",
   },
   needs_input: {
-    label: "Needs Input",
-    dotClass: "bg-amber-400 animate-pulse",
-    borderClass: "border-amber-500/30",
-    bgClass: "bg-amber-500/5",
+    label: "NEEDS INPUT",
+    color: "var(--color-status-input)",
+    ledClass: "led-active",
+    stripeClass: "stripe-active",
   },
   idle: {
-    label: "Idle",
-    dotClass: "bg-zinc-500",
-    borderClass: "border-zinc-700/50",
-    bgClass: "bg-zinc-500/5",
+    label: "IDLE",
+    color: "var(--color-status-idle)",
+    ledClass: "",
+    stripeClass: "",
   },
   archived: {
-    label: "Ended",
-    dotClass: "bg-zinc-700",
-    borderClass: "border-zinc-800/50",
-    bgClass: "bg-zinc-800/5",
+    label: "ENDED",
+    color: "var(--color-status-ended)",
+    ledClass: "",
+    stripeClass: "",
   },
 } as const;
 
@@ -39,44 +39,64 @@ function useTimeAgo(timestamp: number): string {
   }, []);
 
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return `${seconds}s ago`;
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
-  return `${hours}h`;
+  return `${hours}h ago`;
 }
 
 function TimeAgo({ timestamp }: { timestamp: number }) {
   const display = useTimeAgo(timestamp);
-  return <span className="text-xs text-zinc-500">{display}</span>;
+  return <span className="text-[11px] text-text-muted tabular-nums">{display}</span>;
 }
 
 export function SessionCard({ session }: { session: Session }) {
   const config = STATUS_CONFIG[session.status];
 
   return (
-    <div
-      className={`rounded-lg border p-4 ${config.borderClass} ${config.bgClass}`}
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className={`h-2.5 w-2.5 rounded-full ${config.dotClass}`} />
-          <span className="text-sm font-medium text-zinc-300">
-            {config.label}
+    <div className="group relative rounded-lg border border-border bg-surface hover:border-border-subtle hover:bg-surface-raised transition-colors">
+      {/* Status stripe */}
+      <div
+        className={`absolute left-0 top-3 bottom-3 w-[3px] rounded-full ${config.stripeClass}`}
+        style={{ backgroundColor: config.color }}
+      />
+
+      <div className="pl-5 pr-4 py-4">
+        {/* Header: status + time */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-[7px] w-[7px] rounded-full ${config.ledClass}`}
+              style={{ backgroundColor: config.color, color: config.color }}
+            />
+            <span
+              className="text-[10px] uppercase tracking-[0.15em] font-sans font-medium"
+              style={{ color: config.color }}
+            >
+              {config.label}
+            </span>
+          </div>
+          <TimeAgo timestamp={session.statusChangedAt} />
+        </div>
+
+        {/* Project name */}
+        <div className="mb-1.5">
+          <span className="text-[14px] font-medium text-text-primary">
+            {session.project}
           </span>
         </div>
-        <TimeAgo timestamp={session.statusChangedAt} />
+
+        {/* Activity */}
+        <div className="text-[12px] text-text-secondary mb-2 font-sans">
+          {session.currentActivity}
+        </div>
+
+        {/* Model */}
+        <div className="text-[11px] text-text-muted">
+          {session.model}
+        </div>
       </div>
-
-      <div className="mb-1">
-        <span className="text-sm font-mono text-zinc-400">
-          {session.project}
-        </span>
-      </div>
-
-      <div className="text-xs text-zinc-500 mb-2">{session.currentActivity}</div>
-
-      <div className="text-xs text-zinc-600">{session.model}</div>
     </div>
   );
 }

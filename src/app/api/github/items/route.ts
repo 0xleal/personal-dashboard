@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getAllSessions } from "@/lib/store";
 import { verifyJwt, SESSION_COOKIE } from "@/lib/auth";
+import { getGitHubItems } from "@/lib/github";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,5 +19,6 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(await getAllSessions(payload.userId));
+  const result = await getGitHubItems(payload.userId);
+  return NextResponse.json(result);
 }

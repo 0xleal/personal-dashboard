@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getAllSessions } from "@/lib/store";
 import { verifyJwt, SESSION_COOKIE } from "@/lib/auth";
+import { deleteGitHubConnection } from "@/lib/github";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function DELETE() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
@@ -19,5 +19,6 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(await getAllSessions(payload.userId));
+  await deleteGitHubConnection(payload.userId);
+  return NextResponse.json({ ok: true });
 }
